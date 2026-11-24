@@ -92,6 +92,15 @@ type assetListData struct {
 	BulkMax int
 }
 
+// parsePage parses a 1-based page number; anything invalid or beyond 32 bits is 0.
+func parsePage(v string) int {
+	n, err := strconv.ParseInt(v, 10, 32)
+	if err != nil || n < 0 {
+		return 0
+	}
+	return int(n)
+}
+
 func parseID(v string) int64 {
 	n, err := strconv.ParseInt(v, 10, 64)
 	if err != nil || n < 0 {
@@ -158,7 +167,7 @@ func (s *Server) assets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	f := aq.Filter
-	f.Page = int(parseID(q.Get("page")))
+	f.Page = parsePage(q.Get("page"))
 	d := &assetListData{Q: f.Q, CategoryID: f.CategoryID, LocationID: f.LocationID, Status: f.Status, Sort: f.Sort, Desc: f.Desc,
 		Statuses: store.Statuses, Fields: aq.Fields, FieldVals: aq.FieldVals}
 	if d.Categories, err = s.DB.ListCategories(ctx); err != nil {

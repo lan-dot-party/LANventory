@@ -340,7 +340,7 @@ type inspListData struct {
 func (s *Server) inspections(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	f, keep := inspFilterFromQuery(r.URL.Query())
-	f.Page = int(parseID(r.URL.Query().Get("page")))
+	f.Page = parsePage(r.URL.Query().Get("page"))
 	d := &inspListData{F: f, Filtered: len(keep) > 0}
 	var err error
 	if d.Categories, err = s.DB.ListCategories(ctx); err != nil {
